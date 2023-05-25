@@ -1,0 +1,21 @@
+{% extends "quotes/base.html" %}
+
+{% block main %}
+<main>
+
+    <div class="px-4 pt-2 my-5 text-center border-bottom">
+        <h3 class="my_display-4 text-body-emphasis text-center">{{author.fullname}}</h3>
+        <div class="col-lg-9 mx-auto">
+            <p class="lead mb-4">Born: {{author.born_date}} {{author.born_location}}</p>
+            <p class="description_text text-justify">{{author.description}}</p>
+
+
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
+                <a href="{% url 'quotes:all_quotes_autor' author.id 1 %}" class="btn btn-primary btn-lg px-4 me-sm-3">All quotes author</a>
+                <a href="{% url 'quotes:quotes' %}"  class="btn btn-outline btn-lg px-4">Back to quotes</a>
+            </div>
+        </div>
+    </div>
+
+</main>
+{% endblock %}

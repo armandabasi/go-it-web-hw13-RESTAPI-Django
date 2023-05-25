@@ -1,0 +1,57 @@
+{% extends "quotes/base.html" %}
+{% load extract %}
+
+{% block main %}
+<main>
+    <div class="container">
+        <div class="row mb-3">
+            <div class="col-sm-6 col-lg-8 themed-grid-col ">
+                <div class="modal-content rounded-4 shadow">
+
+                        <span class="text text-center" itemprop="text">
+                            {{quote.quote}}
+                        </span>
+                    <div>
+                        <a class="author" href="{% url 'quotes:show_author' quote.author.id %}"
+                           title="{{quote.author.fullname}}">
+                            {{quote.author.fullname}}
+                        </a>
+                    </div>
+                    <div class="node__topics">
+                        Tags:
+                        {% for tag in quote.tags.all %}
+                        <a class="btn mb-2 mb-md-0 btn-outline-danger btn-sm"
+                           href="{% url 'quotes:all_quotes_one_tag' tag.id 1 %}">{{tag.name}}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-4 themed-grid-col">
+                {% if user.is_authenticated %}
+                <div class="d-grid gap-2 d-sm-flex justify-content-center mb-5">
+                    <a href="{% url 'quotes:add_author' %}" class="btn btn-outline btn-lg px-4">Add author</a>
+                    <a href="{% url 'quotes:add_quote' %}" class="btn btn-outline btn-lg px-4">Add quotes</a>
+                </div>
+                {% endif %}
+                <div class="d-grid gap-3 justify-content-center mb-5">
+                    <h3 class="text-top-tags">TOP 10 tags</h3>
+                    <div class="d-grid gap-3 justify-content-center mb-5">
+                        {% for tag in top_tags %}
+                        <a class="btn mb-2 mb-md-0 btn-outline-danger btn-sm"
+                           href="{% url 'quotes:all_quotes_one_tag' tag.id 1 %}">{{tag}}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="px-4 pt-5 my-5 text-center border-bottom">
+
+    </div>
+
+</main>
+{% endblock %}
