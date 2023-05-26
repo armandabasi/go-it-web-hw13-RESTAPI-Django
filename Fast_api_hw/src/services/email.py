@@ -7,13 +7,14 @@ from fastapi_mail.errors import ConnectionErrors
 from pydantic import EmailStr
 
 from src.services.auth import auth_service
+from src.conf.config import settings
 
 conf = ConnectionConfig(
-    MAIL_USERNAME="for_send_email@meta.ua",
-    MAIL_PASSWORD="Tt_789654123",
-    MAIL_FROM=EmailStr("for_send_email@meta.ua"),
-    MAIL_PORT=465,
-    MAIL_SERVER="smtp.meta.ua",
+    MAIL_USERNAME=settings.mail_username,
+    MAIL_PASSWORD=settings.mail_password,
+    MAIL_FROM=EmailStr(settings.mail_from),
+    MAIL_PORT=settings.mail_port,
+    MAIL_SERVER=settings.mail_server,
     MAIL_FROM_NAME="Reset Password",
     MAIL_STARTTLS=False,
     MAIL_SSL_TLS=True,

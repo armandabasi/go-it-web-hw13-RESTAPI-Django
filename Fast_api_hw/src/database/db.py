@@ -1,23 +1,10 @@
-import configparser
-import pathlib
-
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-file_config = pathlib.Path(__file__).parent.parent.joinpath("conf/config.ini")
-config = configparser.ConfigParser()
-config.read(file_config)
-
-username = config.get("DEV", "USER")
-password = config.get("DEV", "PASSWORD")
-domain = config.get("DEV", "DOMAIN")
-port = config.get("DEV", "PORT")
-db_name = config.get("DEV", "DB_NAME")
+from src.conf.config import settings
 
 
-DATABASE_URL = f"postgresql://{username}:{password}@{domain}:{port}/{db_name}"
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
+DATABASE_URL = settings.database_url
 
 engine = create_engine(DATABASE_URL, max_overflow=5)  #  echo=True,
 
