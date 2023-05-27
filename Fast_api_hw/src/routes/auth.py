@@ -5,10 +5,11 @@ from fastapi.security import OAuth2PasswordRequestForm, HTTPAuthorizationCredent
 from sqlalchemy.orm import Session
 
 from src.database.db import get_db
-from src.schemas import UserModel, UserResponse, TokenModel, RequestEmail
+from src.schemas import UserModel, UserResponse, TokenModel, RequestEmail, ChangePassword
 from src.repository import users as repository_users
 from src.services.auth import auth_service
-from src.services.email import send_email
+from src.services.email import send_email, send_email_with_password
+from src.services.generate_password import generate_password
 
 router = APIRouter(prefix='/auth', tags=["auth"])
 security = HTTPBearer()
@@ -86,3 +87,31 @@ async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, r
     if user:
         background_tasks.add_task(send_email, user.email, user.username, request.base_url)
     return {"message": "Check your email for confirmation."}
+
+
+@router.post('/reset_password')
+async def reset_password(body: RequestEmail, background_tasks: BackgroundTasks, request: Request,
+                         db: Session = Depends(get_db)):
+    user = await repository_users.get_user_by_email(body.email, db)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Verification error")
+    if user:
+        new_password = generate_password()
+        background_tasks.add_task(send_email_with_password, user.email, user.username, new_password, request.base_url)
+        new_password = auth_service.get_password_hash(new_password)
+        await repository_users.save_new_password(user, new_password, db)
+    return {"message": "You new password send to your email."}
+
+
+@router.post('/change_password')
+async def change_password(body: ChangePassword, db: Session = Depends(get_db)):
+    user = await repository_users.get_user_by_email(body.email, db)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Verification error")
+    if user:
+        if not auth_service.verify_password(body.password, user.password):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid password")
+    new_password = auth_service.get_password_hash(body.new_password)
+    await repository_users.save_new_password(user, new_password, db)
+    return {"message": "Your password has been successfully changed."}
+

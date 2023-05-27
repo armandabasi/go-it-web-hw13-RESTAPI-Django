@@ -56,3 +56,9 @@ class TokenModel(BaseModel):
 
 class RequestEmail(BaseModel):
     email: EmailStr
+
+
+class ChangePassword(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=6, max_length=10)
+    new_password: str = Field(min_length=6, max_length=10)
